@@ -14,7 +14,7 @@ import (
 // generate a random map of size Rows x Columns
 // with humans being half the number of group of humans (for symetrie)
 // and monsters being the number of monster
-func generate(filename string, Rows, Columns, humans, monster int) *Map {
+func generate(mapPath string, Rows, Columns, humans, monster int) *Map {
 	rand.Seed(time.Now().UnixNano())
 	m := &Map{Rows: Rows, Columns: Columns}
 	m.cells = make([]cell, m.Columns*m.Rows)

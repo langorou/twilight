@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func startWebApp(m *Map, port int) {
+func startWebApp(m *Map) {
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
