@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func StartServer(mapPath string, useRand bool, rows int, columns int, humans int, monsters int) {
+func StartServer(mapPath string, useRand bool, rows int, columns int, humans int, monster int) {
 	flag.Parse()
 	var names [2]string
 	var m *Map
