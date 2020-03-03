@@ -16,7 +16,7 @@ type server struct {
 	name [2]string
 }
 
-func (s *server) run() {
+func (s *server) run(timeout time.Duration) {
 	log.Println("Starting tcp server")
 	l, err := net.Listen("tcp", ":5555")
 	defer l.Close()
@@ -32,7 +32,7 @@ func (s *server) run() {
 	log.Println("First player entered the game")
 	ch0 := make(chan []cell, 1)
 	done0 := make(chan []cell, 1)
-	go s.runP(con0, 0, ch0, done0)
+	go s.runP(con0, 0, ch0, done0, timeout)
 
 	// second player
 	con1, err := l.Accept()
@@ -42,7 +42,7 @@ func (s *server) run() {
 	log.Println("Second player entered the game")
 	ch1 := make(chan []cell, 1)
 	done1 := make(chan []cell, 1)
-	go s.runP(con1, 1, ch1, done1)
+	go s.runP(con1, 1, ch1, done1, timeout)
 
 	s.state = ready
 	var update0, update1 []cell
@@ -67,15 +67,15 @@ func (s *server) run() {
 	close(ch1)
 	switch s.state {
 	case win0:
-		log.Println("Player 0 won")
+		log.Printf("Player 0 won: %s", s.name[0])
 	case win1:
-		log.Println("Player 0 won")
+		log.Printf("Player 1 won: %s", s.name[1])
 	case null:
 		log.Println("Equality")
 	}
 }
 
-func (s *server) runP(c net.Conn, id int, ch chan []cell, done chan []cell) {
+func (s *server) runP(c net.Conn, id int, ch chan []cell, done chan []cell, timeout time.Duration) {
 	defer s.bye(c)
 	// Initialisation stuff
 	reader := bufio.NewReader(c)
@@ -108,7 +108,7 @@ func (s *server) runP(c net.Conn, id int, ch chan []cell, done chan []cell) {
 	done <- updated
 	for update := range ch {
 		s.send_upd(c, update)
-		c.SetReadDeadline(time.Now().Add(2 * time.Second))
+		c.SetReadDeadline(time.Now().Add(timeout))
 		err, updated := s.upd(reader, id)
 		if err != nil {
 			fmt.Println(err.Error())

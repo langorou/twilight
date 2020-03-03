@@ -3,9 +3,10 @@ package server
 import (
 	"flag"
 	"log"
+	"time"
 )
 
-func StartServer(mapPath string, useRand bool, rows int, columns int, humans int, monster int) {
+func StartServer(mapPath string, useRand bool, rows int, columns int, humans int, monster int, timeout time.Duration) {
 	flag.Parse()
 	var names [2]string
 	var m *Map
@@ -21,6 +22,6 @@ func StartServer(mapPath string, useRand bool, rows int, columns int, humans int
 	}
 	m.updateHistory()
 	s := server{m, names}
-	go s.run()
+	go s.run(timeout)
 	startWebApp(s.Map)
 }
