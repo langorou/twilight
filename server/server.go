@@ -16,7 +16,7 @@ type server struct {
 	name [2]string
 }
 
-func (s *server) run(timeout time.Duration, useRandomPort bool, portUsed chan int) {
+func (s *server) run(timeout time.Duration, useRandomPort bool, portUsed chan int, gameOutcome chan state) {
 	log.Println("Starting tcp server")
 	var l net.Listener
 	var err error
@@ -80,6 +80,9 @@ func (s *server) run(timeout time.Duration, useRandomPort bool, portUsed chan in
 	case null:
 		log.Println("Equality")
 	}
+
+	gameOutcome <- s.state
+
 }
 
 func (s *server) runP(c net.Conn, id int, ch chan []cell, done chan []cell, timeout time.Duration) {

@@ -6,7 +6,19 @@ import (
 	"time"
 )
 
-func StartServer(mapPath string, useRand bool, rows int, columns int, humans int, monster int, timeout time.Duration, useRandomPort bool, portUsed chan int, noWebApp bool) {
+func StartServer(
+	mapPath string,
+	useRand bool,
+	rows int,
+	columns int,
+	humans int,
+	monster int,
+	timeout time.Duration,
+	useRandomPort bool,
+	portUsed chan int,
+	noWebApp bool,
+	gameOutcome chan state,
+) {
 	flag.Parse()
 	var names [2]string
 	var m *Map
@@ -22,7 +34,7 @@ func StartServer(mapPath string, useRand bool, rows int, columns int, humans int
 	}
 	m.updateHistory()
 	s := server{m, names}
-	go s.run(timeout, useRandomPort, portUsed)
+	go s.run(timeout, useRandomPort, portUsed, gameOutcome)
 	if !noWebApp {
 		startWebApp(s.Map)
 	}
