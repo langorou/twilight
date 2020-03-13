@@ -16,9 +16,16 @@ type server struct {
 	name [2]string
 }
 
-func (s *server) run(timeout time.Duration) {
+func (s *server) run(timeout time.Duration, useRandomPort bool, portUsed chan int) {
 	log.Println("Starting tcp server")
-	l, err := net.Listen("tcp", ":5555")
+	var l net.Listener
+	var err error
+	if useRandomPort {
+		l, err = net.Listen("tcp", ":0")
+		portUsed <- l.Addr().(*net.TCPAddr).Port
+	} else {
+		l, err = net.Listen("tcp", ":5555")
+	}
 	defer l.Close()
 	if err != nil {
 		panic(err.Error())
