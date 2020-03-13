@@ -16,7 +16,32 @@ type server struct {
 	name [2]string
 }
 
-func (s *server) run(timeout time.Duration, useRandomPort bool, portUsed chan int, gameOutcome chan state) {
+type GameOutcome struct {
+	P1Eff, P2Eff int
+	Turn         int
+}
+
+func getGameOutcome(m *Map) GameOutcome {
+	p1Eff := 0
+	p2Eff := 0
+	for i := range m.monster[0] {
+		p1Eff += m.monster[0][i]
+	}
+	for i := range m.monster[1] {
+		p2Eff += m.monster[1][i]
+	}
+
+	return GameOutcome{
+		p1Eff, p2Eff, m.mov,
+	}
+}
+
+func (s *server) run(
+	timeout time.Duration,
+	useRandomPort bool,
+	portUsed chan int,
+	gameOutcomeCh chan GameOutcome,
+) {
 	log.Println("Starting tcp server")
 	var l net.Listener
 	var err error
@@ -81,7 +106,7 @@ func (s *server) run(timeout time.Duration, useRandomPort bool, portUsed chan in
 		log.Println("Equality")
 	}
 
-	gameOutcome <- s.state
+	gameOutcomeCh <- getGameOutcome(s.Map)
 
 }
 

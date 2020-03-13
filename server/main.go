@@ -17,7 +17,7 @@ func StartServer(
 	useRandomPort bool,
 	portUsed chan int,
 	noWebApp bool,
-	gameOutcome chan state,
+	gameOutcomeCh chan GameOutcome,
 ) {
 	flag.Parse()
 	var names [2]string
@@ -34,7 +34,7 @@ func StartServer(
 	}
 	m.updateHistory()
 	s := server{m, names}
-	go s.run(timeout, useRandomPort, portUsed, gameOutcome)
+	go s.run(timeout, useRandomPort, portUsed, gameOutcomeCh)
 	if !noWebApp {
 		startWebApp(s.Map)
 	}
