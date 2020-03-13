@@ -24,11 +24,11 @@ type GameOutcome struct {
 func getGameOutcome(m *Map) GameOutcome {
 	p1Eff := 0
 	p2Eff := 0
-	for i := range m.monster[0] {
-		p1Eff += m.monster[0][i]
+	for _, i := range m.monster[0] {
+		p1Eff += m.cells[i].Count
 	}
-	for i := range m.monster[1] {
-		p2Eff += m.monster[1][i]
+	for _, i := range m.monster[1] {
+		p2Eff += m.cells[i].Count
 	}
 
 	return GameOutcome{
