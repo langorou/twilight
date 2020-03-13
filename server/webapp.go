@@ -47,7 +47,7 @@ func startWebApp(m *Map) {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-type packed struct {
+type Packed struct {
 	X, Y   int
 	Humans []cell
 	Vamps  []cell
@@ -56,8 +56,8 @@ type packed struct {
 	Mov    int
 }
 
-func packMap(m *Map) packed {
-	p := packed{
+func packMap(m *Map) Packed {
+	p := Packed{
 		X:      m.Columns*80 + 1,
 		Y:      m.Rows*80 + 1,
 		Humans: make([]cell, 0),

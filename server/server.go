@@ -19,6 +19,7 @@ type server struct {
 type GameOutcome struct {
 	P1Eff, P2Eff int
 	Turn         int
+	History      []Packed
 }
 
 func getGameOutcome(m *Map) GameOutcome {
@@ -32,7 +33,7 @@ func getGameOutcome(m *Map) GameOutcome {
 	}
 
 	return GameOutcome{
-		p1Eff, p2Eff, m.mov,
+		p1Eff, p2Eff, m.mov, m.history,
 	}
 }
 

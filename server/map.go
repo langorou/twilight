@@ -109,7 +109,7 @@ type Map struct {
 	// state i.e. waiting/playing/ended...
 	state state
 	// history list of json of the state of the game
-	history []packed
+	history []Packed
 }
 
 func newMap(mapPath string) *Map {
