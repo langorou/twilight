@@ -11,6 +11,42 @@ import (
 	"github.com/rakyll/statik/fs"
 )
 
+func StartWebAppFromHistory(h []Packed) {
+	statikFS, err := fs.New()
+	if err != nil {
+		panic(err)
+	}
+
+	fs := http.FileServer(statikFS)
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
+	index, err := template.New("index.html").Parse(Index)
+	if err != nil {
+		panic(err.Error())
+	}
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		err := index.Execute(w, h[len(h)-1])
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+	})
+
+	http.HandleFunc("/data", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		mov := r.FormValue("mov")
+		var offset int
+		offset, _ = strconv.Atoi(mov)
+		if offset > len(h) {
+			// Just return empty
+			json.NewEncoder(w).Encode([]int{})
+		}
+		json.NewEncoder(w).Encode(h[offset:])
+	})
+
+	log.Println("Web server running on http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
 func startWebApp(m *Map) {
 	statikFS, err := fs.New()
 	if err != nil {
@@ -162,12 +198,15 @@ const Index = `
 				<button class="btn btn-default" v-on:click="playpause">
 					⏯️
 				</button>
+				<button class="btn btn-default" v-on:click="nextplay">
+					⏭
+				</button>
 			</div>
 			<div style="width:90%;height:90vh;overflow:auto;margin-top:3px">
 				<table class="table table-striped">
 					<tbody>
 						<tr v-for="i in history.length" style="height:1.2em"> 
-							<td v-on:click="setState(i-1)" role="button">
+							<td v-if="i>1" v-on:click="setState(i-1)" role="button">
 								Movement {{"{{i-1}}"}}
 							</td>
 					</tbody>
@@ -219,6 +258,11 @@ const Index = `
 			setState: function(i) {
 				this.playing = false;
 				this.idx = i
+			},
+			nextplay: function() {
+				if (this.idx < this.history.length) {
+					this.idx += 1
+				}
 			}
 		  }
 		});
