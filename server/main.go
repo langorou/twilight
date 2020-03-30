@@ -1,7 +1,6 @@
 package server
 
 import (
-	"flag"
 	"log"
 	"time"
 )
@@ -19,7 +18,6 @@ func StartServer(
 	noWebApp bool,
 	gameOutcomeCh chan GameOutcome,
 ) {
-	flag.Parse()
 	var names [2]string
 	var m *Map
 	if !useRand {
